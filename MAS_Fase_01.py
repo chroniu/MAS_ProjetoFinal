@@ -28,8 +28,8 @@ class InputError(Exception):
 
 # In[11]:
 
-PATTERN_01 = 'procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----'
-PATTERN_02 = 'r  b   swpd  livre buffer  cache   si   so    bi    bo   in   cs us sy id wa st'
+# PATTERN_01 = 'procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----'
+# PATTERN_02 = 'r  b   swpd  livre buffer  cache   si   so    bi    bo   in   cs us sy id wa st'
 
 def process_set(data, date_start, date_end, dt=None):
         
@@ -201,10 +201,10 @@ def process_files():
     processed_files.close()
     print("novos arquivos processados")
     
-def import_files_db():
+# def import_files_db():
     #
     
-    None
+#    None
     
 
 
