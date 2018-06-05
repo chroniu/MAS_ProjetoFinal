@@ -1,0 +1,7 @@
+*.log
+__pycache__/
+*.db
+extract_origin/
+origin_logs/
+csv_logs/
+.ipynb_checkpoints/
