@@ -1,0 +1,21 @@
+Instruções para execução.
+
+1. Instalar o Anaconda(distribuição python)
+2. Clonar o repositório para a máquina local
+3. Instalar o ambiente virtual que contem todos os pacotes utilizados no projeto(pode demorar alguns minutos para terminar a instalação)
+
+No terminal, na pasta do projeto 
+>> conda install --name mas --file environment.yml
+
+  Depois de instalado rodar o script "start_project.sh" -> basicamente só cria pastas e arquivos de log, 
+se for rodar no windows, é só criar as pastas e arquivos com os mesmos nomes do script.
+
+4. Agora para rodar o projeto, no terminal:
+>> conda activate mas
+>> jupyther notebook 
+
+5. O arquivo database.py contêm o acesso ao banco de dados. Alterar a senha/usuário/database para os da máquina local, ou comentar a linha e descomentar a anterior para usar o sqlite3. O problema do sqlite3 é que é muito lento para rodar. 
+
+5. Escolar a Fase 01 e/ou Fase 02  e executar
+
+conda install -n mas  dataset
