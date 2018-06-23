@@ -4,14 +4,14 @@ password ='naomeencheosaco'
 
 remote_dir = 'Logs_VMSTAT/'
 #TODO replace files for DIR
-original_DIR  = './origin_logs/'
-extracted_DIR = './extract_origin/'
+original_DIR  = './data/origin_logs/'
+extracted_DIR = './data/extract_origin/'
 
-csv_dir    = './csv_logs/'
+csv_dir    = './data/csv_logs/'
 
-downloaded_files = "downloaded.log"
-processed_files = "processed.log"
-correct_files = "correct.log"
-error_files = "erros.log"
+downloaded_files = "data/control/downloaded.log"
+processed_files = "data/control/processed.log"
+correct_files = "data/control/correct.log"
+error_files = "data/control/erros.log"
 
-imported_files_60 = "imported_60.log"
+imported_files_60 = "data/control/imported_60.log"

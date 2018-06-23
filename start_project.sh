@@ -1,6 +1,10 @@
+mkdir data
+cd data
 mkdir origin_logs
 mkdir extract_origin
 mkdir csv_logs
+mkdir control
+cd control
 touch downloaded.log
 touch processed.log
 touch correct.log
