@@ -22,7 +22,9 @@ month = [
     ('12','Dezembro')]
 
 
-filter_basic = ' '.join(['SELECT r_avg, r_max, r_p90,',
+[]
+
+filter_basic = ' '.join(['SELECT time_min_date as date, r_avg, r_max, r_p90,',
                          'us_avg, us_max, us_p90,',
                          'sy_avg, sy_max, sy_p90,',
                          'id_avg, id_max, id_p90',
