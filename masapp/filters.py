@@ -84,6 +84,7 @@ def build_filter_controls(options):
 
     time_select = RangeSlider(start=0, end=24, value=(0,24), step=1, title="Period")
 
+    scale_select =  RadioButtonGroup(labels=querys.scale, active=0)
 
 
     def select_data():
@@ -94,35 +95,43 @@ def build_filter_controls(options):
         day_week = day_week_select.active
         years = year_select.value
         time = time_select.value
-
+        scale = querys.scale_str[scale_select.active]
+        
         db = database.db
-
-        sql = build_query(server_name,years, months, days, day_week, time)
-
+        
+        sql = build_query(server_name, scale, years, months, days, day_week, time)
+        print(sql)
         #
 
         return pd.io.sql.read_sql(sql, db)
 
 
-    return [server_select, year_select, month_select, day_select,
+    return [server_select, scale_select, year_select, month_select, day_select,
             day_week_select, time_select], select_data
 
 
 
-def build_query(server_name, years, months, days, week_day, time_period):
+def build_query(server_name, scale, years, months, days, week_day, time_period):
     if('0' in months):
         months = [str(x) for x in range(1, 13)]
+
     if(days[0] == days[1]):
         days = [str(days[0])]
     else:
         days = [str(day) for day in range(days[0], days[1]+1)]
+        
+    if(years[0] == years[1]):
+        years = [str(years[0])]
+    else:
+        years = [str(year) for year in range(years[0], years[1]+1)]    
+        
 #    import pdb; pdb.set_trace()
     if(week_day == []):
         week_day = [str(day) for day in range(1,8)]
     else:
         week_day = [str(day) for day in week_day]
 
-    return ' AND '.join([querys.filter_basic.format(server_name),
+    return ' AND '.join([querys.filter_basic.format(scale, server_name),
                          querys.filter_years.format(','.join([str(x) for x in years])),
                          querys.filter_months.format(','.join(months)),
                          querys.filter_days.format(','.join(days)),

@@ -21,6 +21,8 @@ def update():
     df = select_data()
     print("len(df)", len(df))
     #print(df.head())
+    df['date'] = df['date'].astype(np.datetime64)
+
     if not (len(df) == 0):
         x_start = min(df['date'])
         x_end   = max(df['date'])
@@ -32,7 +34,6 @@ def update():
         p.x_range.reset_start = None
         p.x_range.reset_end = None
 
-    df['date'] = df['date'].astype(np.datetime64)
     source.data = dict(
         date=df['date'],
         r_max=df['r_max'],
@@ -91,7 +92,7 @@ select.x_range.range_padding = 0.01
 
 # define a tabela
 columns = [
-    TableColumn(field="date", title="Data" , formatter=DateFormatter(format="%m/%d/%Y %H:%M:%S")),
+    TableColumn(field="date", title="Data" , formatter=DateFormatter()),#format="%%Y/%m/%d %H")
     TableColumn(field="r_max", title="r_max", formatter=NumberFormatter(format="0.000")),
     TableColumn(field="r_avg", title="r_avg", formatter=NumberFormatter(format="0.000")),
     TableColumn(field="r_p90", title="r_p90", formatter=NumberFormatter(format="0.000")),

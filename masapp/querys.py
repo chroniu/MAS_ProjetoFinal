@@ -6,6 +6,8 @@ server_names = 'SELECT distinct(server) FROM server_statistics'
 
 day_week = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado']
 
+scale = ['mês', 'dia', 'hora']
+scale_str = ['%Y-%m', '%Y-%m-%d', '%Y-%m-%d %H']
 month = [
     ('0', 'All'),
     ('1', 'Janeiro'),
@@ -21,13 +23,11 @@ month = [
     ('11','Novembro'),
     ('12','Dezembro')]
 
-
-[]
-
-filter_basic = ' '.join(['SELECT time_min_date as date, r_avg, r_max, r_p90,',
-                         'us_avg, us_max, us_p90,',
-                         'sy_avg, sy_max, sy_p90,',
-                         'id_avg, id_max, id_p90',
+filter_basic = ' '.join(["SELECT  date_format(time_min_date, '{}') as date,",
+                         'AVG(r_avg)  as r_avg , MAX(r_max)  as r_max,  AVG(r_p90)  as r_p90,',
+                         'AVG(us_avg) as us_avg, MAX(us_max) as us_max, AVG(us_p90) as us_p90,',
+                         'AVG(sy_avg) as sy_avg, MAX(sy_max) as sy_max, AVG(sy_p90) as sy_p90,',
+                         'AVG(id_avg) as id_avg, MAX(id_max) as id_max, AVG(id_p90) as id_p90',
                         'FROM server_statistics',
                         "WHERE server='{}'"])
 
@@ -41,4 +41,4 @@ filter_week_day = 'DAYOFWEEK(time_min_date) in ({})'
 
 filter_time_period = 'HOUR(time_min_date) >= {} AND HOUR(time_min_date) <= {}'
 
-order = 'ORDER BY time_min_date ASC LIMIT 100000'
+order = 'GROUP BY date ORDER BY date ASC LIMIT 100000'
