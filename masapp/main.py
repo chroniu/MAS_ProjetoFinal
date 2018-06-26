@@ -79,9 +79,6 @@ tooltips=[
 tools = ['save']
     
 print("loaded")
-
-desc = Div(text=open(join(dirname(__file__), "description.html")).read(), width=800)
-
 controls, select_data = filters.build_filter_controls(filters.read_default_filter())
 for control in controls:
     if type(control) in [RadioButtonGroup, CheckboxButtonGroup]:
@@ -95,7 +92,7 @@ source = ColumnDataSource(data=dict(date=[], us_max=[] ))
 #plots  sys
 plot_sys = figure(plot_height=300, toolbar_location="right", #name="line",
            x_axis_type="datetime", x_range= Range1d(), sizing_mode="scale_width",
-           tools=tools)
+           tools=tools, title="Sys")
 plot_sys.add_tools(HoverTool(show_arrow=False, line_policy='next', tooltips=tooltips, formatters={'date':'datetime'}))
 add_plot_lines(plot_sys, source, plot_sources[0:4], Spectral3)
 plot_sys.yaxis.axis_label = 'sys'
@@ -103,9 +100,9 @@ plot_sys.background_fill_color="#f5f5f5"
 plot_sys.grid.grid_line_color="white"
 
 #plot fila 
-plot_queue = figure(plot_height=300, toolbar_location="right", #name="line",
+plot_queue = figure(plot_height=300,  toolbar_location="right", #name="line",
            x_axis_type="datetime", x_range=plot_sys.x_range, sizing_mode="scale_width",
-           tools=tools)
+           tools=tools, title="Queue")
 plot_queue.add_tools(HoverTool(show_arrow=False, line_policy='next', tooltips=tooltips, formatters={'date':'datetime'}))
 add_plot_lines(plot_queue, source, plot_sources[3:], Spectral3)
 plot_queue.yaxis.axis_label = 'r'
@@ -114,10 +111,10 @@ plot_queue.grid.grid_line_color="white"
 
 
 # plot seletor 
-select = figure(plot_height=450, y_range=plot_queue.y_range, plot_width = 800,
+select = figure(plot_height=320, y_range=plot_queue.y_range, sizing_mode="scale_width",
                 x_axis_type="datetime", y_axis_type=None,
-                toolbar_location="right", sizing_mode="scale_width",   tools=tools)
-
+                toolbar_location="right", tools=tools)
+select
 range_rool = RangeTool(x_range=plot_sys.x_range)
 range_rool.overlay.fill_color = "navy"
 range_rool.overlay.fill_alpha = 0.2
@@ -147,20 +144,25 @@ columns = [
     TableColumn(field="id_avg", title="id_avg", formatter=NumberFormatter(format="0.000")),
     TableColumn(field="id_p90", title="id_p90", formatter=NumberFormatter(format="0.000"))
 ]
-data_table = DataTable(source=source, columns=columns, width=800)
+data_table = DataTable(source=source, columns=columns, sizing_mode="stretch_both")
 table = widgetbox(data_table)
 
+inputs = widgetbox(*controls, sizing_mode='scale_width')
+inputs.name="inputs"
+plots = row(plot_sys, plot_queue,  sizing_mode='scale_width')
+plots.name = "plots"
 
-sizing_mode = 'fixed'  # 'scale_width' also looks nice with this example
+#input_row = row(inputs,  sizing_mode='scale_both')
+#input_row.name = "inputs"
 
-inputs = widgetbox(*controls, sizing_mode=sizing_mode)
-l = layout([
-    [desc],
-    [select, inputs],
-    [row(plot_sys, plot_queue)],
-    [table]
-], sizing_mode=sizing_mode)
+selector = select
+selector.name = "selector"
+data_table.name = "table"
 
 update()  # initial load of the data
-curdoc().add_root(l)
+curdoc().title = "MAS Dashboard"
+curdoc().add_root(selector)
+curdoc().add_root(inputs)
+curdoc().add_root(plots)
+curdoc().add_root(data_table)
 curdoc().title = "MAS"
