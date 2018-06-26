@@ -6,8 +6,9 @@ import numpy as np
 import pandas.io.sql as psql
 import filters
 from bokeh.plotting import figure
-from bokeh.layouts import layout, widgetbox, column
-from bokeh.models import ColumnDataSource, Div, RangeTool
+from bokeh.palettes import Spectral6, YlOrRd6, Spectral3
+from bokeh.layouts import layout, widgetbox, column, row
+from bokeh.models import ColumnDataSource, Div, RangeTool, HoverTool
 from bokeh.models.ranges import Range1d
 from bokeh.models.widgets import Slider, Select, TextInput, RadioButtonGroup, MultiSelect, RangeSlider, CheckboxButtonGroup, Button, DataTable, TableColumn, NumberFormatter, DateFormatter
 from bokeh.io import curdoc
@@ -18,6 +19,12 @@ from bokeh.sampledata.movies_data import movie_path
 #movies = psql.read_sql(query, conn)
 
 def update():
+    def update_range(range_, min_, max_):
+        range_.start = min_
+        range_.end = max_
+        range_.reset_start = None
+        range_.reset_end = None
+        
     df = select_data()
     print("len(df)", len(df))
     #print(df.head())
@@ -26,14 +33,15 @@ def update():
     if not (len(df) == 0):
         x_start = min(df['date'])
         x_end   = max(df['date'])
-        y_start = min(df['r_max'])
-        y_end   = max(df['r_max'])
         
-        p.x_range.start = x_start
-        p.x_range.end   = x_end
-        p.x_range.reset_start = None
-        p.x_range.reset_end = None
-
+        #xs
+        update_range(plot_sys.x_range, x_start, x_end)
+        #ys
+        #update_range(plot_sys.y_range, min(df['sy_max']), max(df['sy_max']))
+        #update_range(plot_queue.y_range, min(df['r_max']), max(df['r_max']))
+        
+        
+        
     source.data = dict(
         date=df['date'],
         r_max=df['r_max'],
@@ -51,6 +59,25 @@ def update():
     )
 
     
+def add_plot_lines(plot_figure, source, plot_sources, pallet):
+    for val, color in zip(plot_sources, pallet):
+        plot_figure.line('date', val, source=source, color=color, line_width=2, alpha=0.7, legend=val)
+        plot_figure.circle('date', val, source=source, color=color, line_width=2, alpha=0.7, legend=val)
+        
+    plot_figure.legend.location = "top_left"
+    plot_figure.legend.click_policy="hide"
+        
+        
+plot_sources = ['sy_max', 'sy_avg', 'sy_p90', 'r_max', 'r_avg', 'r_p90']
+
+tooltips=[
+        ("data", "@date{%F}"),
+        ("(sy_max, sy_avg, sy_90)", "(@sy_max, @sy_avg, @sy_p90)"),
+        ("(r_max, r_avg, r_p90)", "(@r_max, @r_avg, @r_p90)")
+    ]
+
+tools = ['save']
+    
 print("loaded")
 
 desc = Div(text=open(join(dirname(__file__), "description.html")).read(), width=800)
@@ -65,24 +92,38 @@ for control in controls:
 
 source = ColumnDataSource(data=dict(date=[], us_max=[] ))
 
-#plots 
-p = figure(plot_height=110, tools="", toolbar_location=None, #name="line",
-           x_axis_type="datetime", x_range= Range1d(), sizing_mode="scale_width")
+#plots  sys
+plot_sys = figure(plot_height=300, toolbar_location="right", #name="line",
+           x_axis_type="datetime", x_range= Range1d(), sizing_mode="scale_width",
+           tools=tools)
+plot_sys.add_tools(HoverTool(show_arrow=False, line_policy='next', tooltips=tooltips, formatters={'date':'datetime'}))
+add_plot_lines(plot_sys, source, plot_sources[0:4], Spectral3)
+plot_sys.yaxis.axis_label = 'sys'
+plot_sys.background_fill_color="#f5f5f5"
+plot_sys.grid.grid_line_color="white"
 
-p.line('date', 'sy_max', source=source, line_width=2, alpha=0.7)
-p.yaxis.axis_label = 'sy_max'
-p.background_fill_color="#f5f5f5"
-p.grid.grid_line_color="white"
+#plot fila 
+plot_queue = figure(plot_height=300, toolbar_location="right", #name="line",
+           x_axis_type="datetime", x_range=plot_sys.x_range, sizing_mode="scale_width",
+           tools=tools)
+plot_queue.add_tools(HoverTool(show_arrow=False, line_policy='next', tooltips=tooltips, formatters={'date':'datetime'}))
+add_plot_lines(plot_queue, source, plot_sources[3:], Spectral3)
+plot_queue.yaxis.axis_label = 'r'
+plot_queue.background_fill_color="#f5f5f5"
+plot_queue.grid.grid_line_color="white"
 
-select = figure(plot_height=110, y_range=p.y_range,
+
+# plot seletor 
+select = figure(plot_height=450, y_range=plot_queue.y_range, plot_width = 800,
                 x_axis_type="datetime", y_axis_type=None,
-                tools="", toolbar_location=None, sizing_mode="scale_width")
+                toolbar_location="right", sizing_mode="scale_width",   tools=tools)
 
-range_rool = RangeTool(x_range=p.x_range)
+range_rool = RangeTool(x_range=plot_sys.x_range)
 range_rool.overlay.fill_color = "navy"
 range_rool.overlay.fill_alpha = 0.2
 
-select.line('date', 'sy_max', source=source)
+#select.line('date', 'sy_max', source=source)
+add_plot_lines(select, source, plot_sources, Spectral6)
 select.ygrid.grid_line_color = None
 select.add_tools(range_rool)
 select.toolbar.active_multi = range_rool
@@ -106,7 +147,7 @@ columns = [
     TableColumn(field="id_avg", title="id_avg", formatter=NumberFormatter(format="0.000")),
     TableColumn(field="id_p90", title="id_p90", formatter=NumberFormatter(format="0.000"))
 ]
-data_table = DataTable(source=source, columns=columns)#, width=800)
+data_table = DataTable(source=source, columns=columns, width=800)
 table = widgetbox(data_table)
 
 
@@ -115,7 +156,8 @@ sizing_mode = 'fixed'  # 'scale_width' also looks nice with this example
 inputs = widgetbox(*controls, sizing_mode=sizing_mode)
 l = layout([
     [desc],
-    [column(select, p), inputs],
+    [select, inputs],
+    [row(plot_sys, plot_queue)],
     [table]
 ], sizing_mode=sizing_mode)
 
