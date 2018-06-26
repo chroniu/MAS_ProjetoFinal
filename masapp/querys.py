@@ -41,4 +41,4 @@ filter_week_day = 'DAYOFWEEK(time_min_date) in ({})'
 
 filter_time_period = 'HOUR(time_min_date) >= {} AND HOUR(time_min_date) <= {}'
 
-order = 'ORDER BY time_min_date ASC'
+order = 'ORDER BY time_min_date ASC LIMIT 100000'
