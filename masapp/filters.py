@@ -128,4 +128,4 @@ def build_query(server_name, years, months, days, week_day, time_period):
                          querys.filter_days.format(','.join(days)),
                          querys.filter_week_day.format(','.join(
                              week_day)),#[str(querys.day_week.index(x)) for x in week_day])),
-                         querys.filter_time_period.format(time_period[0], time_period[1])])
+                         querys.filter_time_period.format(time_period[0], time_period[1])]) + ' ' +  querys.order
