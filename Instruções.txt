@@ -12,11 +12,11 @@ No terminal, na pasta do projeto
 se for rodar no windows, é só criar as pastas e arquivos com os mesmos nomes do script.
 
 4. Agora para rodar o projeto, no terminal:
->> python3 mas_fase01.py
->> python3 mas_fase02.py
+(mas4) >> python3 mas_fase01.py
+(mas4) >> python3 mas_fase02.py
 
 
-5. O arquivo database.py contêm o acesso ao banco de dados. Alterar a senha/usuário/database para os da máquina local, ou comentar a linha e descomentar a anterior para usar o sqlite3. O problema do sqlite3 é que é muito lento para rodar. 
+5. O arquivo database.py contêm o acesso ao banco de dados. Alterar a senha/usuário/database para os da máquina local, ou comentar a linha e descomentar a anterior para usar o sqlite3. O problema do sqlite3 é que é muito lento para rodar real. 
 
 5. Escolar a Fase 01 e/ou Fase 02  e executar
 
