@@ -31,7 +31,8 @@ class LogFileControl():
                 downloaded=file_dict['downloaded'],
                 processed=file_dict['processed'],
                 correct=file_dict['correct'],
-                coments=file_dict['comments']))
+                coments=file_dict['comments'],
+                imported=False))
 
     def update_file(self, file_dict):
         print("updading key=",file_dict['name'])
@@ -42,8 +43,18 @@ class LogFileControl():
                 downloaded=file_dict['downloaded'],
                 processed=file_dict['processed'],
                 correct=file_dict['correct'],
-                coments=file_dict['comments']),
+                coments=file_dict['comments'],
+                imported=False),
             ['file_name'])
+
+    def get_not_imported_files(self):
+        results = []
+        for row in db[self.table].find(imported=False, correct=True):
+            results.append(row['file_name'])
+        return set(results)
+
+    def check_as_imported(self, file_name):
+         db[self.table].update(dict(file_name=file_name, imported=True), ['file_name'])
 
 
 

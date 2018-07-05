@@ -1,18 +1,10 @@
-
 # coding: utf-8
-
-# In[1]:
-
-#get_ipython().magic(u'load_ext autoreload')
-#get_ipython().magic(u'autoreload 2')
-
-
-# In[2]:
 
 import pandas as pd
 import dataset
 import configs
 import database
+from logcontrol import log_control
 
 
 # In[ ]:
@@ -26,15 +18,15 @@ def gen_statistics(file_name, num_agrupate):
     fields.remove('time')
 
     aggregations = {
-        'time': {    
+        'time': {
             'min_date': 'min',
             'max_date': 'max'}}
 
     # import pdb;pdb.set_trace()
     for field in ['r', 'us', 'sy', 'id']:
-        aggregations[field] = { 
+        aggregations[field] = {
             # 'min': 'min',
-            'avg': 'mean', 
+            'avg': 'mean',
             'max': 'max',
             'p90': lambda x : x.quantile(0.9)
         }
@@ -43,45 +35,39 @@ def gen_statistics(file_name, num_agrupate):
     df.columns = ["_".join(x) for x in df.columns.ravel()]
     return df
 
-def import_to_bd(num_agrupate, imported_file):
-    with open(imported_file, 'r', encoding='utf-8') as infile:
-        imported_list = infile.readlines()
-    imported_list = [x.strip() for x in imported_list]
-    with open(configs.correct_files, 'r', encoding='utf-8') as infile:
-        processed_list = infile.readlines()
-    processed_list = [x.strip().split('/')[-1] for x in processed_list]
-
-    files_set = set(processed_list).difference(set([x.strip().split('/')[-1] for x in imported_list]))
+def import_to_bd(num_agrupate):
+    imported_list = list(log_control.get_not_imported_files())
+    files_set = set([x.strip().replace('.tar.bz','') for x in imported_list])
 
     print("{} novos arquivos para importar".format(len(files_set)))
     if(len(files_set)==0):
         return
-    
-    imported_files = open(imported_file, 'a+', encoding='utf-8')
 
     table = database.db['server_statistics']
+    count = 1
     for file in files_set:
         server_name = file[0:file.find('_stats')]
         statistics = gen_statistics(configs.csv_dir+file+".csv", num_agrupate)#, num_agrupate)
-    
+
         statistics = statistics.to_dict(orient='split')
 
         columns = statistics['columns']
         values  = statistics['data']
+        rows = []
         for value in values:
                 row = dict(zip(columns, value))
                 row['server'] = server_name
                 row['agregation'] = num_agrupate
-                table.insert(row)
-                imported_files.write(file)
-        print("{} importado para o banco".format(file))
-    imported_files.close()
+                rows.append(row)
+        table.insert_many(rows)
+        log_control.check_as_imported(file+'.tar.bz')
+        print("{} importado para o banco {}/{}".format(file, count, len(files_set)))
+        count +=1
 
 
 # In[ ]:
 
 if __name__ == "__main__":
     print("fase 02")
-    s = import_to_bd(60, configs.imported_files_60)
-    print("fase 02 concluída")      
-
+    s = import_to_bd(60)
+    print("fase 02 concluída")
