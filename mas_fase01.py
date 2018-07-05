@@ -1,18 +1,12 @@
 # coding: utf-8
 
-# # Configurações
-
-# In[1]:
-
-#get_ipython().magic(u'load_ext autoreload')
-#get_ipython().magic(u'autoreload 2')
-
 
 # In[2]:
 
 import numpy as np
 import time, datetime
 import paramiko
+from logcontrol import log_control
 import csv
 from datetime import timedelta
 import mas_utils as utils
@@ -108,12 +102,14 @@ def audit_processed_file(data):
         return False, "init: {} end:{} incorretos".format(init, end)
 
 def __write_log__(status, message, file_name):
-    if(status):
-        with open(configs.correct_files,'a+') as resultFile:
-            resultFile.write(file_name+"\n")
-    else:
-        with open(configs.error_files,'a+') as resultFile:
-            resultFile.write(file_name+" " + message+ "\n")
+    update_row = {
+        'name': file_name.strip(),
+        'downloaded' : True,
+        'processed' : True,
+        'correct': status,
+        'comments' : "".join(message)
+    }
+    log_control.update_file(update_row)
 
 def regularize_data(row, header):
     us = float(row[header.index('us')])
@@ -170,10 +166,10 @@ def download_files_from_server():
     # get list of files from server
     server_file_list = ftp_client.listdir(configs.remote_dir)
     # compare to downloaded list of files
-    with open(configs.downloaded_files, 'r', encoding='utf-8') as infile:
-        downloaded_list = infile.readlines()
 
-    files_to_download = set(server_file_list).difference(set([x.strip() for x in downloaded_list]))
+    downloaded_list = log_control.get_all_files()
+
+    files_to_download = set(server_file_list).difference(downloaded_list)
     print("{} novos arquivos encontrados no servidor".format(len(files_to_download)))
     if(len(files_to_download) == 0):
         return
@@ -181,45 +177,38 @@ def download_files_from_server():
     # download files needed
     utils.download_files(ftp_client, configs.remote_dir,
                          configs.original_DIR, files_to_download)
-    print("novos arquivos baixados")
+    print("{} novos arquivos baixados".format(len(files_to_download)))
     print("extraindo arquivos baixados")
     utils.extract_files(configs.original_DIR,
                         configs.extracted_DIR,
                         files_to_download)
 
-    with open(configs.downloaded_files,'a+') as resultFile:
-        for file in files_to_download:
-            resultFile.write(file+"\n")
+    for file in files_to_download:
+        log_control.insert_file(
+            {
+                'name': file.strip(),
+                'downloaded' : True,
+                'processed' : False,
+                'correct': False,
+                'comments' : "Downloaded"
+            })
     print("extração completa")
 
 def process_files():
     # get list of downloaded files
-    with open(configs.downloaded_files, 'r', encoding='utf-8') as infile:
-        downloaded_list = infile.readlines()
-    downloaded_list = [x.strip().replace('.tar.bz','') for x in downloaded_list]
-    # get list of processed files
-    with open(configs.processed_files, 'r', encoding='utf-8') as infile:
-        processed_list = infile.readlines()
-    processed_list = [x.strip() for x in processed_list]
 
-    files_to_process = set(downloaded_list).difference(set(processed_list))
+    files_to_process = log_control.get_unprocessed_files()
     print("{} novos arquivos para processar".format(len(files_to_process)))
     if(len(files_to_process) == 0):
         return
 
-    processed_files = open(configs.processed_files, 'a+', encoding='utf-8')
+    count = 1
     for file in files_to_process:
-        print('processing', file)
+        print('processing', file, '{}/{}'.format(count, len(files_to_process)))
         process_file(configs.extracted_DIR + file)
-        processed_files.write(file+"\n")
-    processed_files.close()
+
+        count += 1
     print("novos arquivos processados")
-
-def import_files_db():
-    #
-
-    None
-
 
 
 # In[7]:
