@@ -14,6 +14,7 @@ Alterar a senha/usuário/database para os da máquina local
 
 
 7. Agora para rodar a fase 01 ou a fase 02, no terminal:
+(base) >> conda activate mas3
 (mas3) >> python3 mas_fase01.py
 (mas3) >> python3 mas_fase02.py
 
