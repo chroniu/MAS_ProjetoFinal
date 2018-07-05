@@ -91,7 +91,7 @@ source = ColumnDataSource(data=dict(date=[], us_max=[] ))
 
 #plots  sys
 plot_sys = figure(plot_height=300, toolbar_location="right", #name="line",
-           x_axis_type="datetime", x_range= Range1d(), sizing_mode="scale_width",
+           x_axis_type="datetime", x_range= Range1d(), y_range=Range1d(start=0, end=1.0), sizing_mode="scale_width",
            tools=tools, title="Sys")
 plot_sys.add_tools(HoverTool(show_arrow=False, line_policy='next', tooltips=tooltips, formatters={'date':'datetime'}))
 add_plot_lines(plot_sys, source, plot_sources[0:4], Spectral3)

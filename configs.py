@@ -6,7 +6,7 @@ remote_dir = 'Logs_VMSTAT/'
 #TODO replace files for DIR
 original_DIR  = './data/origin_logs/'
 extracted_DIR = './data/extract_origin/'
-
+control_DIR   = './data/control/'
 csv_dir    = './data/csv_logs/'
 
 downloaded_files = "data/control/downloaded.log"

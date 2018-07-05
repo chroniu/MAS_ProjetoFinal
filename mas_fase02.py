@@ -18,7 +18,7 @@ import database
 # In[ ]:
 
 def gen_statistics(file_name, num_agrupate):
-    df = pd.read_csv(configs.csv_dir + 'mrburns_stats-20140801.csv')
+    df = pd.read_csv(file_name)
     df['time'] = pd.to_datetime(df['time'])
     df.rename(index=str, columns={"livre": "free"})
 
@@ -30,10 +30,10 @@ def gen_statistics(file_name, num_agrupate):
             'min_date': 'min',
             'max_date': 'max'}}
 
-
-    for field in fields:
+    # import pdb;pdb.set_trace()
+    for field in ['r', 'us', 'sy', 'id']:
         aggregations[field] = { 
-            'min': 'min',
+            # 'min': 'min',
             'avg': 'mean', 
             'max': 'max',
             'p90': lambda x : x.quantile(0.9)
@@ -47,12 +47,12 @@ def import_to_bd(num_agrupate, imported_file):
     with open(imported_file, 'r', encoding='utf-8') as infile:
         imported_list = infile.readlines()
     imported_list = [x.strip() for x in imported_list]
-    
-    with open(configs.processed_files, 'r', encoding='utf-8') as infile:
+    with open(configs.correct_files, 'r', encoding='utf-8') as infile:
         processed_list = infile.readlines()
-    processed_list = [x.strip() for x in processed_list]
+    processed_list = [x.strip().split('/')[-1] for x in processed_list]
 
-    files_set = set(processed_list).difference(set(imported_list))
+    files_set = set(processed_list).difference(set([x.strip().split('/')[-1] for x in imported_list]))
+
     print("{} novos arquivos para importar".format(len(files_set)))
     if(len(files_set)==0):
         return
@@ -62,7 +62,7 @@ def import_to_bd(num_agrupate, imported_file):
     table = database.db['server_statistics']
     for file in files_set:
         server_name = file[0:file.find('_stats')]
-        statistics = gen_statistics(configs.csv_dir+file+".csv", num_agrupate)
+        statistics = gen_statistics(configs.csv_dir+file+".csv", num_agrupate)#, num_agrupate)
     
         statistics = statistics.to_dict(orient='split')
 
