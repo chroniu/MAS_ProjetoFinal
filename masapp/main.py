@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-
 from os.path import dirname, join
-
 import numpy as np
 import pandas.io.sql as psql
 import filters
@@ -14,17 +12,13 @@ from bokeh.models.widgets import Slider, Select, TextInput, RadioButtonGroup, Mu
 from bokeh.io import curdoc
 from bokeh.sampledata.movies_data import movie_path
 
-#conn = sql.connect(movie_path)
-#query = open(join(dirname(__file__), 'query.sql')).read()
-#movies = psql.read_sql(query, conn)
-
 def update():
     def update_range(range_, min_, max_):
         range_.start = min_
         range_.end = max_
         range_.reset_start = None
         range_.reset_end = None
-        
+
     df = select_data()
     print("len(df)", len(df))
     #print(df.head())
@@ -33,15 +27,15 @@ def update():
     if not (len(df) == 0):
         x_start = min(df['date'])
         x_end   = max(df['date'])
-        
+
         #xs
         update_range(plot_sys.x_range, x_start, x_end)
         #ys
         #update_range(plot_sys.y_range, min(df['sy_max']), max(df['sy_max']))
         #update_range(plot_queue.y_range, min(df['r_max']), max(df['r_max']))
-        
-        
-        
+
+
+
     source.data = dict(
         date=df['date'],
         r_max=df['r_max'],
@@ -58,17 +52,17 @@ def update():
         id_p90=df['id_p90'],
     )
 
-    
+
 def add_plot_lines(plot_figure, source, plot_sources, pallet):
     for val, color in zip(plot_sources, pallet):
         plot_figure.line('date', val, source=source, color=color, line_width=2, alpha=0.7, legend=val)
         plot_figure.circle('date', val, source=source, color=color, line_width=2, alpha=0.7, legend=val)
-        
-    plot_figure.legend.location = "top_left"
+
+    plot_figure.legend.location = "bottom_left"
     plot_figure.legend.click_policy="hide"
-        
-        
-plot_sources = ['sy_max', 'sy_avg', 'sy_p90', 'r_max', 'r_avg', 'r_p90']
+
+
+plot_sources = ['sy_max', 'sy_p90', 'sy_avg', 'r_max', 'r_p90', 'r_avg']
 
 tooltips=[
         ("data", "@date{%F}"),
@@ -76,8 +70,8 @@ tooltips=[
         ("(r_max, r_avg, r_p90)", "(@r_max, @r_avg, @r_p90)")
     ]
 
-tools = ['save']
-    
+tools = ['save']#, 'wheel_zoom', 'box_zoom', 'reset']
+
 print("loaded")
 controls, select_data = filters.build_filter_controls(filters.read_default_filter())
 for control in controls:
@@ -91,7 +85,7 @@ source = ColumnDataSource(data=dict(date=[], us_max=[] ))
 
 #plots  sys
 plot_sys = figure(plot_height=300, toolbar_location="right", #name="line",
-           x_axis_type="datetime", x_range= Range1d(), y_range=Range1d(start=0, end=1.0), sizing_mode="scale_width",
+           x_axis_type="datetime", x_range= Range1d(), y_range=Range1d(start=0, end=1.1), sizing_mode="scale_width",
            tools=tools, title="Sys")
 plot_sys.add_tools(HoverTool(show_arrow=False, line_policy='next', tooltips=tooltips, formatters={'date':'datetime'}))
 add_plot_lines(plot_sys, source, plot_sources[0:4], Spectral3)
@@ -99,7 +93,7 @@ plot_sys.yaxis.axis_label = 'sys'
 plot_sys.background_fill_color="#f5f5f5"
 plot_sys.grid.grid_line_color="white"
 
-#plot fila 
+#plot fila
 plot_queue = figure(plot_height=300,  toolbar_location="right", #name="line",
            x_axis_type="datetime", x_range=plot_sys.x_range, sizing_mode="scale_width",
            tools=tools, title="Queue")
@@ -110,7 +104,7 @@ plot_queue.background_fill_color="#f5f5f5"
 plot_queue.grid.grid_line_color="white"
 
 
-# plot seletor 
+# plot seletor
 select = figure(plot_height=320, y_range=plot_queue.y_range, sizing_mode="scale_width",
                 x_axis_type="datetime", y_axis_type=None,
                 toolbar_location="right", tools=tools)
