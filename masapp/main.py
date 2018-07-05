@@ -70,7 +70,7 @@ tooltips=[
         ("(r_max, r_avg, r_p90)", "(@r_max, @r_avg, @r_p90)")
     ]
 
-tools = ['save']#, 'wheel_zoom', 'box_zoom', 'reset']
+tools = ['save', 'wheel_zoom', 'box_zoom', 'reset']
 
 print("loaded")
 controls, select_data = filters.build_filter_controls(filters.read_default_filter())
