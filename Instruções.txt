@@ -8,9 +8,6 @@ No terminal, na pasta do projeto
 >> conda env create -f environment.yml
 >> conda activate mas4
 
-  Depois de instalado rodar o script "start_project.sh" -> basicamente só cria pastas e arquivos de log, 
-se for rodar no windows, é só criar as pastas e arquivos com os mesmos nomes do script.
-
 4. Agora para rodar o projeto, no terminal:
 (mas4) >> python3 mas_fase01.py
 (mas4) >> python3 mas_fase02.py
