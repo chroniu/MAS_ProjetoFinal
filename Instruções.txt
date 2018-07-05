@@ -10,18 +10,15 @@ No terminal, na pasta do projeto
   Depois de instalado rodar o script "start_project.sh" -> basicamente só cria pastas e arquivos de log, 
 se for rodar no windows, é só criar as pastas e arquivos com os mesmos nomes do script.
 
-4. Agora para rodar o projeto, no terminal:
->> python3 mas_fase01.py
->> python3 mas_fase02.py
+
+3. O arquivo database.py e masapp/database.py contêm o acesso ao banco de dados. 
+Alterar a senha/usuário/database para os da máquina local
 
 
-5. O arquivo database.py contêm o acesso ao banco de dados. Alterar a senha/usuário/database para os da máquina local, ou comentar a linha e descomentar a anterior para usar o sqlite3. O problema do sqlite3 é que é muito lento para rodar. 
+4. Agora para rodar a fase 01 ou a fase 02, no terminal:
+(mas3) >> python3 mas_fase01.py
+(mas3) >> python3 mas_fase02.py
 
-5. Escolar a Fase 01 e/ou Fase 02  e executar
-
-conda install -n mas  dataset
-
-
-
+5. Para rodar a fase 3
 Para rodar o applicativo/gui, no terminal
->> bokeh serve --show masapp
+(mas3) >> bokeh serve --show masapp
