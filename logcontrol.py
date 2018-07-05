@@ -14,14 +14,14 @@ class LogFileControl():
     def get_all_files(self):
         results = []
         for row in db[self.table].find(downloaded=True):
-            results.append(row.file_name)
+            results.append(row['file_name'])
         return set(results)
 
 
     def get_unprocessed_files(self):
-        result = []
+        results = []
         for row in db[self.table].find(processed=False):
-            result.append(row.file_name)
+            results.append(row['file_name'])
         return set(results)
 
     def insert_file(self, file_dict):
@@ -34,6 +34,8 @@ class LogFileControl():
                 coments=file_dict['comments']))
 
     def update_file(self, file_dict):
+        print("updading key=",file_dict['name'])
+
         db[self.table].update(
             dict(
                 file_name=file_dict['name'],

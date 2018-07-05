@@ -3,6 +3,7 @@ import os
 import tarfile
 import zipfile
 import errno
+import ntpath
 import stat
 import shutil
 import six
@@ -84,3 +85,12 @@ def extract_files(directory, to_directory, files_set):
             if file.endswith('.tar.bz'):
                 print('extracting file', file)
                 _extract_archive(root+'/'+file, path=to_directory)
+
+
+
+
+
+
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)

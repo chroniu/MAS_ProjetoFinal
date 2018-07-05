@@ -4,6 +4,7 @@ import tarfile
 import zipfile
 import errno
 import stat
+import ntpath
 
 def download_files(sftp_client, remote_dir, local_dir):
     if not exists_remote(sftp_client, remote_dir):

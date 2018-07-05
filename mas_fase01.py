@@ -103,7 +103,7 @@ def audit_processed_file(data):
 
 def __write_log__(status, message, file_name):
     update_row = {
-        'name': file_name.strip(),
+        'name': utils.path_leaf(file_name.strip() + '.tar.bz'),
         'downloaded' : True,
         'processed' : True,
         'correct': status,
@@ -205,7 +205,7 @@ def process_files():
     count = 1
     for file in files_to_process:
         print('processing', file, '{}/{}'.format(count, len(files_to_process)))
-        process_file(configs.extracted_DIR + file)
+        process_file(configs.extracted_DIR + file.replace('.tar.bz', ''))
 
         count += 1
     print("novos arquivos processados")
